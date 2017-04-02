@@ -9,12 +9,17 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Manifest {
-	public static boolean debug = false;
-	public static final String LAUNCHER = "launcher.txt";
-	public static String publicIndex = null;
-	public static String testIndex = null;
+public class Downloader {
+	public static boolean debug = false; // When set to true, verbose logging is enabled
 
+	/**
+	 * Downloads all the files in a manifest
+	 * 
+	 * @param manifest
+	 *            Link to the manifest to download files from
+	 * @param baseFolder
+	 *            Base folder relative to the installer to download the files to
+	 */
 	private static void downloadFiles(String manifest, String baseFolder) {
 		try (Scanner s = new Scanner(new File(manifest))) {
 			String prefix = null;
@@ -34,6 +39,14 @@ public class Manifest {
 		}
 	}
 
+	/**
+	 * Downloads a single file
+	 * 
+	 * @param src
+	 *            Link to the file
+	 * @param destPath
+	 *            Path relative to the installer to download the file
+	 */
 	public static void downloadFile(String src, String destPath) {
 		System.out.println("Downloading " + destPath);
 		try {
@@ -56,10 +69,13 @@ public class Manifest {
 		}
 	}
 
-	private static void getLatest() {
+	/**
+	 * Gets the latest file lists from RSI
+	 */
+	public static void getLatest() {
 		System.out.println("Pulling latest file lists from RSI...");
-		downloadFile("http://manifest.robertsspaceindustries.com/Launcher/_LauncherInfo", LAUNCHER);
-		try (Scanner s = new Scanner(new File(LAUNCHER))) {
+		downloadFile("http://manifest.robertsspaceindustries.com/Launcher/_LauncherInfo", "launcher.txt");
+		try (Scanner s = new Scanner(new File("launcher.txt"))) {
 			String pub = null;
 			String test = null;
 			while (s.hasNextLine()) {
@@ -79,22 +95,27 @@ public class Manifest {
 		}
 	}
 
+	/**
+	 * Downloads the latest version of the PTU client
+	 */
 	public static void getTest() {
 		System.out.println("Downloading the lastest test version(PTU) of the game...");
-		if (testIndex == null)
-			getLatest();
 		generateManifest("testIndex.txt");
 		downloadFiles("manifest_testIndex.txt", "Test");
 	}
 
+	/**
+	 * Downloads the latest version of the Live client
+	 */
 	public static void getPublic() {
 		System.out.println("Downloading the latest public version of the game...");
-		if (publicIndex == null)
-			getLatest();
 		generateManifest("publicIndex.txt");
 		downloadFiles("manifest_publicIndex.txt", "Public");
 	}
 
+	/**
+	 * Generates a file manifest from the given downloaded file index
+	 */
 	private static void generateManifest(String fileIndex) {
 		System.out.println("Creating manifest for: " + fileIndex);
 		ArrayList<String> files = new ArrayList<String>();
@@ -151,6 +172,9 @@ public class Manifest {
 		}
 	}
 
+	/**
+	 * Cleans up all temporary files created during runtime
+	 */
 	public static void cleanup() {
 		File launcher = new File("launcher.txt");
 		File publicIndex = new File("publicIndex.txt");

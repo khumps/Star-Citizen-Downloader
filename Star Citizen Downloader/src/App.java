@@ -1,28 +1,34 @@
-public class GameDownloader {
+public class App {
 
 	public static void main(String[] args) {
 		System.out.println("Thankyou for using the Star Citizen Downloader, created by khumps");
 		System.out.println("The game, name and all assets are sole property of Cloud Imperium Games");
 		System.out.println("The downloader comes as is, report any downloader issues to the developer");
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			Manifest.cleanup();
+			Downloader.cleanup(); // Cleans up any temp files from this run at the end
 		}));
 		if (args.length < 1 && args[1] != null)
 			if (args[1].equals("debug")) {
-				Manifest.debug = true;
+				Downloader.debug = true;
 				System.err.println("DOWNLOADER IS RUNNING IN DEBUG MODE, VERBOSE LOGGING ENABLED");
 			}
-		Manifest.cleanup();
+		Downloader.cleanup(); // Cleans up any left over files from the last run that might have been missed
+		Downloader.getLatest(); // Gets latest file lists
 		switch (args[0].toLowerCase()) {
 		case "public":
-			Manifest.getPublic();
+			Downloader.getPublic();
 			break;
 		case "test":
-			Manifest.getTest();
+			Downloader.getTest();
 			break;
 		case "both":
-			Manifest.getPublic();
-			Manifest.getTest();
+			Downloader.getPublic();
+			Downloader.getTest();
 			break;
 		default:
 			System.err.println("Invalid argument, please use public, test, or both");
