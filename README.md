@@ -32,3 +32,6 @@ Download it [here](https://github.com/khumps/Star-Citizen-Downloader/raw/master/
 8. look for the lines Public_downloadFinished and/or Test_downloadFinished(whichever you downloaded) and change false to true
 9. reopen the launcher, you should now be able to run the game.
 10. enjoy!
+
+
+# Please report any issues you have in the issue tracker. Thanks!
